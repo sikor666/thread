@@ -34,6 +34,8 @@ void weAreUnderAttack()
 
 void run02()
 {
+    cout << "Hardware threads: " << thread::hardware_concurrency() << endl;
+
     int c;
 
     do
