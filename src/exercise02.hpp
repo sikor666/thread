@@ -12,24 +12,24 @@ using namespace std;
 
 void clean()
 {
-    std::this_thread::sleep_for(6s);
+    this_thread::sleep_for(6s);
 
-    cout << "Clean" << endl;
+    cout << this_thread::get_id() << ": Clean" << endl;
 }
 
 void fullSpeedAhead()
 {
-    cout << "Full speed ahead" << endl;
+    cout << this_thread::get_id() << ": Full speed ahead" << endl;
 }
 
 void stopTheEngine()
 {
-    cout << "Stop the engine" << endl;
+    cout << this_thread::get_id() << ": Stop the engine" << endl;
 }
 
 void weAreUnderAttack()
 {
-    cout << "We are under attack" << endl;
+    cout << this_thread::get_id() << ": We are under attack" << endl;
 }
 
 void run02()
@@ -86,5 +86,5 @@ void run02()
     }
     while (c != 100);
 
-    cout << "Ahoy" << endl;
+    cout << this_thread::get_id() << ": Ahoy" << endl;
 }
