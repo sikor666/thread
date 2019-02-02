@@ -10,6 +10,9 @@
 
 using namespace std;
 
+namespace e2
+{
+
 void clean()
 {
     this_thread::sleep_for(6s);
@@ -32,6 +35,8 @@ void weAreUnderAttack()
     cout << this_thread::get_id() << ": We are under attack" << endl;
 }
 
+}
+
 void run02()
 {
     cout << "Hardware threads: " << thread::hardware_concurrency() << endl;
@@ -47,20 +52,20 @@ void run02()
         switch (c)
         {
         case 1:
-            command = thread{ clean };
+            command = thread{ e2::clean };
             command.detach();
             break;
         case 2:
-            command = thread{ fullSpeedAhead };
+            command = thread{ e2::fullSpeedAhead };
             command.detach();
             break;
         case 3:
-            command = thread{ stopTheEngine };
+            command = thread{ e2::stopTheEngine };
             command.detach();
             break;
         case 4:
         {
-            scoped_thread scoped_command{ thread{ weAreUnderAttack } };
+            scoped_thread scoped_command{ thread{ e2::weAreUnderAttack } };
             throw 666;
             break;
         }
@@ -72,10 +77,10 @@ void run02()
         case 6:
         {
             vector<thread> commands;
-            commands.emplace_back(thread{ stopTheEngine });
-            commands.emplace_back(thread{ clean });
-            commands.emplace_back(thread{ weAreUnderAttack });
-            commands.emplace_back(thread{ fullSpeedAhead });
+            commands.emplace_back(thread{ e2::stopTheEngine });
+            commands.emplace_back(thread{ e2::clean });
+            commands.emplace_back(thread{ e2::weAreUnderAttack });
+            commands.emplace_back(thread{ e2::fullSpeedAhead });
 
             for_each(begin(commands), end(commands), mem_fn(&thread::detach));
             break;
