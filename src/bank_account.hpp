@@ -28,6 +28,10 @@ public:
     }
 
     void transfer(bank_account& from, bank_account& to, double amount) {
+
+/*
+ * Deadlock
+ *
         lock_guard<mutex> lock1(from.m);
         cout << "lock for " << from.name << " account acquire by "
              << this_thread::get_id() << endl;
@@ -36,6 +40,12 @@ public:
         cout << "waiting to acquire lock for " << to.name << " account by "
              << this_thread::get_id() << endl;
         lock_guard<mutex> lock2(to.m);
+*/
+
+        cout << this_thread::get_id() << " hold the lock for both mutex\n";
+        unique_lock<mutex> lock1(from.m, defer_lock);
+        unique_lock<mutex> lock2(to.m, defer_lock);
+        lock(lock1, lock2);
 
         from.balance -= amount;
         to.balance += amount;

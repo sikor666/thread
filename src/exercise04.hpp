@@ -5,10 +5,13 @@
 mutex m1;
 mutex m2;
 
-mutex mr;
+recursive_mutex mr;
 
 void m1_first_m2_second()
 {
+/*
+ * Deadlock
+ *
     lock_guard<mutex> lock1(m1);
     this_thread::sleep_for(chrono::milliseconds(1000));
     cout << "thread " << this_thread::get_id()
@@ -17,10 +20,14 @@ void m1_first_m2_second()
     lock_guard<mutex> lock2(m2);
     cout << "thread " << this_thread::get_id()
         << " has acquired lock for m2 mutex, it's wait for m1" << endl;
+*/
 }
 
 void m2_first_m1_second()
 {
+/*
+ * Deadlock
+ *
     lock_guard<mutex> lock2(m2);
     this_thread::sleep_for(chrono::milliseconds(1500));
     cout << "thread " << this_thread::get_id()
@@ -29,6 +36,7 @@ void m2_first_m1_second()
     lock_guard<mutex> lock1(m1);
     cout << "thread " << this_thread::get_id()
         << " has acquired lock for m1 mutex, it's wait for m2" << endl;
+*/
 }
 
 void thread_fun5(thread& t)
@@ -36,7 +44,13 @@ void thread_fun5(thread& t)
     this_thread::sleep_for(chrono::milliseconds(500));
     cout << "thread " << this_thread::get_id()
          << " wait for thred " << t.get_id() << endl;
+/*
+ * Deadlock
+ *
     t.join(); cout << "thread6.join()" << endl;
+*/
+
+    t.detach(); cout << "thread6.detach()" << endl;
 }
 
 void thread_fun6(thread& t)
@@ -44,17 +58,26 @@ void thread_fun6(thread& t)
     this_thread::sleep_for(chrono::milliseconds(800));
     cout << "thread " << this_thread::get_id()
         << " wait for thred " << t.get_id() << endl;
+
+/*
+ * Deadlock
+ *
     t.join(); cout << "thread5.join()" << endl;
+*/
+
+    t.detach(); cout << "thread5.detach()" << endl;
 }
 
 void recursive_function(int& counter)
 {
-    lock_guard<mutex> lock(mr);
+    lock_guard<mutex> lock(recursive_mutex);
 
-    cout << "Recursive function has couner: " << counter
-         << " in thread " << this_thread::get_id() << endl;
+    auto id = this_thread::get_id();
+    printf("Recursive function has couner: %d in thread %d\n", counter, id);
 
     if (--counter <= 0) return;
+
+    this_thread::sleep_for(chrono::milliseconds(300));
 
     recursive_function(counter);
 }
