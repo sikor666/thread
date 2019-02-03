@@ -4,6 +4,7 @@
 
 mutex m1;
 mutex m2;
+mutex m3;
 
 recursive_mutex mr;
 
@@ -82,6 +83,23 @@ void recursive_function(int& counter)
     recursive_function(counter);
 }
 
+void x_operations()
+{
+    cout << "this is some operations\n";
+}
+
+void y_operations()
+{
+    cout << "this is some other operations\n";
+}
+
+unique_lock<mutex> get_lock()
+{
+    unique_lock<mutex> lock(m3);
+    x_operations();
+    return lock;
+}
+
 void run04()
 {
     bank_account account;
@@ -119,6 +137,12 @@ void run04()
     int counter = 4;
     thread thread7{ recursive_function, ref(counter) };
     thread thread8{ recursive_function, ref(counter) };
+
+    this_thread::sleep_for(chrono::milliseconds(1000));
+
+    //move unique_lock
+    unique_lock<mutex> lock(get_lock());
+    y_operations();
 
     thread1.join(); cout << "thread1.join()" << endl;
     thread2.join(); cout << "thread2.join()" << endl;
