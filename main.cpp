@@ -1,6 +1,7 @@
 #include "exercise01.hpp"
 #include "exercise02.hpp"
 #include "exercise03.hpp"
+#include "exercise04.hpp"
 
 int main()
 {
@@ -8,7 +9,8 @@ int main()
     {
         //run01();
         //run02();
-        run03();
+        //run03();
+        run04();
     }
     catch (const std::exception& e)
     {
