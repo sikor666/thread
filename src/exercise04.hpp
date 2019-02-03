@@ -5,6 +5,8 @@
 mutex m1;
 mutex m2;
 
+mutex mr;
+
 void m1_first_m2_second()
 {
     lock_guard<mutex> lock1(m1);
@@ -29,6 +31,34 @@ void m2_first_m1_second()
         << " has acquired lock for m1 mutex, it's wait for m2" << endl;
 }
 
+void thread_fun5(thread& t)
+{
+    this_thread::sleep_for(chrono::milliseconds(500));
+    cout << "thread " << this_thread::get_id()
+         << " wait for thred " << t.get_id() << endl;
+    t.join(); cout << "thread6.join()" << endl;
+}
+
+void thread_fun6(thread& t)
+{
+    this_thread::sleep_for(chrono::milliseconds(800));
+    cout << "thread " << this_thread::get_id()
+        << " wait for thred " << t.get_id() << endl;
+    t.join(); cout << "thread5.join()" << endl;
+}
+
+void recursive_function(int& counter)
+{
+    lock_guard<mutex> lock(mr);
+
+    cout << "Recursive function has couner: " << counter
+         << " in thread " << this_thread::get_id() << endl;
+
+    if (--counter <= 0) return;
+
+    recursive_function(counter);
+}
+
 void run04()
 {
     bank_account account;
@@ -51,8 +81,29 @@ void run04()
     thread thread3{ m1_first_m2_second };
     thread thread4{ m2_first_m1_second };
 
-    thread1.join();
-    thread2.join();
-    thread3.join();
-    thread4.join();
+    this_thread::sleep_for(chrono::milliseconds(1000));
+
+    //deadlock 3
+    thread thread5;
+    thread thread6;
+
+    thread5 = thread{ thread_fun5, ref(thread6) };
+    thread6 = thread{ thread_fun6, ref(thread5) };
+
+    this_thread::sleep_for(chrono::milliseconds(1000));
+
+    //deadlock 4 and crash
+    int counter = 4;
+    thread thread7{ recursive_function, ref(counter) };
+    thread thread8{ recursive_function, ref(counter) };
+
+    thread1.join(); cout << "thread1.join()" << endl;
+    thread2.join(); cout << "thread2.join()" << endl;
+    thread3.join(); cout << "thread3.join()" << endl;
+    thread4.join(); cout << "thread4.join()" << endl;
+
+    thread7.join(); cout << "thread7.join()" << endl;
+    thread8.join(); cout << "thread8.join()" << endl;
+
+    cout << "End of examples about deadlocks" << endl;
 }
